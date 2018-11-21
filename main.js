@@ -92,11 +92,6 @@ function mainFunction() {
     object: undefined
   }
 
-  // Shader Assignment
-  let uniforms = {
-      u_time: { type: "f", value: 1.0 },
-  };
-
   // Material
   let material = new THREE.MeshNormalMaterial();
 
