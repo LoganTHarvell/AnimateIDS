@@ -32,12 +32,6 @@ function mainFunction() {
 
       then = now - (elapsed % fpsInterval);
 
-      // Fluctuates time value
-      if (uniforms.u_time.value%1.5 < 0.2) {
-        factor = -(factor);
-      }
-      uniforms.u_time.value = uniforms.u_time.value + factor;
-
       // Rotates object
       shape.rotation.y += 0.05;
 
@@ -60,37 +54,11 @@ function mainFunction() {
   let scene = new THREE.Scene();
   let aspect = window.innerWidth / window.innerHeight;
 
-  // Field Loading
-  let loadField = function(fieldInfo) {
-    let geometry = new THREE.PlaneGeometry(fieldInfo.size.x, fieldInfo.size.y);
+  // Loads the background texture image
+  let texLoader = new THREE.TextureLoader();
+  background_texture = texLoader.load("./Textures/wood.jpeg");
 
-    let texLoader = new THREE.TextureLoader();
-    texLoader.load(fieldInfo.texPath, onTexLoad);
-
-    function onTexLoad(tex) {
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.offset.set( 0, 0 );
-      tex.repeat.set( 2, 1 );
-
-      let material = new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        map: tex,
-      });
-
-      let field = new THREE.Mesh(geometry, material);
-      field.translateY(250);
-      fieldInfo.object = field;
-
-      scene.add(field);
-    }
-  }
-
-  // Field Info
-  let fieldInfo = {
-    texPath: "./Textures/wood.jpeg",
-    size: new THREE.Vector2(500, 500),
-    object: undefined
-  }
+  scene.background = background_texture;
 
   // Material
   let material = new THREE.MeshNormalMaterial();
@@ -119,8 +87,6 @@ function mainFunction() {
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
   cameraControls.addEventListener("change",render,false);
 
-  // Main Function Calls
-  loadField(fieldInfo);
-
+  // Main function call
   beginAnimation();
 }
