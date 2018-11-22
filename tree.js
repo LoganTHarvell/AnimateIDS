@@ -29,7 +29,7 @@ function Tree(_id) {
       	}
       };
 
-    this.contains(callback);
+    this.traverseDF(callback);
 
     if (parent) {
     	parent.children.push(child);
@@ -51,7 +51,4 @@ function Tree(_id) {
 
   };
 
-  this.contains = function(callback) {
-    this.traverseDF(callback);
-  };
 };
