@@ -32,8 +32,7 @@ function mainFunction() {
 
       then = now - (elapsed % fpsInterval);
 
-      // Rotates object
-      shape.rotation.y += 0.05;
+      rotate_tree();
 
       render();
     }
@@ -60,15 +59,6 @@ function mainFunction() {
 
   scene.background = background_texture;
 
-  // Material
-  let material = new THREE.MeshNormalMaterial();
-
-  // Model
-  let geometry = new THREE.IcosahedronGeometry(10);
-  let shape = new THREE.Mesh(geometry, material);
-  shape.position.set(0, 0, 0);
-  scene.add(shape);
-
   let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
   camera.position.z = 275;
   // camera.position.y = 250;
@@ -86,6 +76,36 @@ function mainFunction() {
   // Camera Controls
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
   cameraControls.addEventListener("change",render,false);
+
+  // Ian's Tree Code that should probably be moved later
+
+  var tree = new Tree(0);
+
+  for (var i=1; i < 10; i++) {
+    tree.add(i, Math.floor(Math.random() * i));
+  }
+
+  console.log(tree)
+
+  if(tree._root != null) {
+    scene.add(tree._root._shape);
+
+    tree._root.children.forEach(function(_node) {
+      scene.add(_node._shape);
+    });
+  }
+
+  let rotate_tree = function() {
+    if(tree._root != null) {
+      tree._root._shape.rotation.y += 0.05;
+    }
+
+    tree._root.children.forEach(function(_node) {
+      _node._shape.rotation.y += 0.05;
+    });
+  }
+
+  console.log(tree.count);
 
   // Main function call
   beginAnimation();
