@@ -105,7 +105,7 @@ function mainFunction() {
     });
   }
 
-  console.log(tree.count);
+  tree.ids(9);
 
   // Main function call
   beginAnimation();
