@@ -79,12 +79,11 @@ function mainFunction() {
 
   // Ian's Tree Code that should probably be moved later
 
-  var tree = new Tree(25);
-  tree.add(50,25,tree.traverseDF)
-  tree.add_node(75)
-  tree.add_node(100)
-  tree.add_node(125)
-  tree.add_node(150)
+  var tree = new Tree(0);
+
+  for (var i=1; i < 10; i++) {
+    tree.add(i, Math.floor(Math.random() * i));
+  }
 
   console.log(tree)
 
