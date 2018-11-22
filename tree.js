@@ -6,10 +6,10 @@ function Node(_id) {
 	this.children = [];
 	this._shape = new THREE.Mesh(geometry, material);
 	this._shape.position.set(0,0,0);
-}
+};
 
 function Tree(_id) {
-  	this.count = 1;
+  this.count = 1;
 	this._root = new Node(_id);
 
 	this.add_node = function(_id) {
@@ -20,14 +20,14 @@ function Tree(_id) {
 			this.add_child(new Node(_id));
 		}
 		this.count++;
-	}
+	};
 
 	this.add_child = function(_node) {
 		// If root doesn't have a child, give it one
 		if(this._root.children.length == 0) {
 			this._root.children.push(_node);
 			return;
-		}
+		};
 
 		// The node to receive the miracle of birth
 		lucky_node = this._root;
@@ -52,26 +52,26 @@ function Tree(_id) {
 
 		// Boom you have a child
 		lucky_node.children.push(_node);
-	}
+	};
 
-  	this.add = function(_id, to_id, traversal) {
-	    var child = new Node(_id),
-	        parent = null,
-	        callback = function(node) {
-	        	if (node._id === to_id) {
-	        		parent = node;
-	        	}
-	        };
+	this.add = function(_id, to_id, traversal) {
+    var child = new Node(_id),
+        parent = null,
+        callback = function(node) {
+        	if (node._id === to_id) {
+        		parent = node;
+        	}
+        };
 
-	    this.contains(callback, traversal);
+    this.contains(callback, traversal);
 
-	    if (parent) {
-	    	parent.children.push(child);
-	    	child.parent = parent;
-	    } else {
-	    	throw new Error('Cannot add node to a non-existent parent.');
-	    }
-  	};
+    if (parent) {
+    	parent.children.push(child);
+    	child.parent = parent;
+    } else {
+    	throw new Error('Cannot add node to a non-existent parent.');
+    }
+	};
 
 	this.traverseDF = function(callback) {
 
@@ -105,9 +105,8 @@ function Tree(_id) {
 	this.contains = function(callback, traversal) {
 		traversal.call(this, callback);
 	};
-
-}
+};
 
 function get_random_index(len) {
 	return Math.floor(Math.random() * (len));
-}
+};
