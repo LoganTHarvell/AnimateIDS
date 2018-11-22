@@ -107,7 +107,7 @@ function mainFunction() {
   }
 
   console.log(tree.count);
-  
+
   // Main function call
   beginAnimation();
 }
