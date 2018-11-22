@@ -32,6 +32,24 @@ function Tree(_id) {
     }
   };
 
+  // Breadth-First traversal method
+  this.traverseBF = function(callback) {
+    var queue = [];
+
+    queue.push(this._root);
+
+    node = queue.pop();
+
+    while(node){
+      for (var i = 0, length = node.children.length; i < length; i++) {
+        queue.push(node.children[i]);
+      }
+
+      callback(node);
+      node = queue.pop();
+    }
+  };
+
   // Depth-First traversal method
   this.traverseDF = function(callback) {
 
@@ -48,7 +66,6 @@ function Tree(_id) {
   // Iterative Deepening traversal method
   this.traverseID = function(callback) {
     let _root = this._root;
-    console.log(this._root);
     var isDone = false;
     var maxLevel = 0;
     var x = 0;
