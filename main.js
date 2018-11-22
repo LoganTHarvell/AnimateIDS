@@ -32,6 +32,8 @@ function mainFunction() {
 
       then = now - (elapsed % fpsInterval);
 
+      rotate_tree();
+
       render();
     }
   }
@@ -75,15 +77,33 @@ function mainFunction() {
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
   cameraControls.addEventListener("change",render,false);
 
+  // Ian's Tree Code that should probably be moved later
+
   var tree = new Tree();
-  tree.add_node(25);
-  tree.add_node(60);
+  tree.add_node(25)
+  tree.add_node(50)
+  tree.add_node(75)
+  tree.add_node(100)
+  tree.add_node(125)
+  tree.add_node(150)
+
+  console.log(tree)
 
   if(tree._root != null) {
     scene.add(tree._root._shape);
 
     tree._root.children.forEach(function(_node) {
       scene.add(_node._shape);
+    });
+  }
+
+  let rotate_tree = function() {
+    if(tree._root != null) {
+      tree._root._shape.rotation.y += 0.05;
+    }
+
+    tree._root.children.forEach(function(_node) {
+      _node._shape.rotation.y += 0.05;
     });
   }
 
