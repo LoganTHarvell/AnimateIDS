@@ -79,8 +79,9 @@ function mainFunction() {
 
   // Ian's Tree Code that should probably be moved later
 
+  // Creates tree, root_id must be 0
+  // Randomly places children in tree
   var tree = new Tree(0);
-
   for (var i=1; i < 10; i++) {
     tree.add(i, Math.floor(Math.random() * i));
   }
@@ -104,8 +105,6 @@ function mainFunction() {
       _node._shape.rotation.y += 0.05;
     });
   }
-
-  tree.ids(9);
 
   // Main function call
   beginAnimation();
