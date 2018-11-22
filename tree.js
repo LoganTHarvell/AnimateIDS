@@ -8,25 +8,24 @@ function Node(_id) {
 	this._shape.position.set(0,0,0);
 }
 
-function Tree() {
-  	this.count = 0;
-	this._root = null;
+function Tree(_id) {
+  	this.count = 1;
+	this._root = new Node(_id);
 
 	this.add_node = function(_id) {
 		if(this._root == null) {
 			this._root = new Node(_id);
-			this.count++;
 		}
 		else {
 			this.add_child(new Node(_id));
 		}
+		this.count++;
 	}
 
 	this.add_child = function(_node) {
 		// If root doesn't have a child, give it one
 		if(this._root.children.length == 0) {
 			this._root.children.push(_node);
-			this.count++;
 			return;
 		}
 
@@ -53,8 +52,6 @@ function Tree() {
 
 		// Boom you have a child
 		lucky_node.children.push(_node);
-
-		this.count++;
 	}
 
   	this.add = function(_id, to_id, traversal) {

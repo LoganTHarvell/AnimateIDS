@@ -79,9 +79,8 @@ function mainFunction() {
 
   // Ian's Tree Code that should probably be moved later
 
-  var tree = new Tree();
-  tree.add_node(25)
-  tree.add_node(50)
+  var tree = new Tree(25);
+  tree.add(50,25,tree.traverseDF)
   tree.add_node(75)
   tree.add_node(100)
   tree.add_node(125)
