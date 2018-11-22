@@ -32,9 +32,6 @@ function mainFunction() {
 
       then = now - (elapsed % fpsInterval);
 
-      // Rotates object
-      shape.rotation.y += 0.05;
-
       render();
     }
   }
@@ -60,15 +57,6 @@ function mainFunction() {
 
   scene.background = background_texture;
 
-  // Material
-  let material = new THREE.MeshNormalMaterial();
-
-  // Model
-  let geometry = new THREE.IcosahedronGeometry(10);
-  let shape = new THREE.Mesh(geometry, material);
-  shape.position.set(0, 0, 0);
-  scene.add(shape);
-
   let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
   camera.position.z = 275;
   // camera.position.y = 250;
@@ -86,6 +74,18 @@ function mainFunction() {
   // Camera Controls
   let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
   cameraControls.addEventListener("change",render,false);
+
+  var tree = new Tree();
+  tree.add_node(25);
+  tree.add_node(60);
+
+  if(tree._root != null) {
+    scene.add(tree._root._shape);
+
+    tree._root.children.forEach(function(_node) {
+      scene.add(_node._shape);
+    });
+  }
 
   // Main function call
   beginAnimation();
