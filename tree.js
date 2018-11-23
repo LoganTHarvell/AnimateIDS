@@ -7,6 +7,9 @@ function Node(_id) {
   this.children = [];
   this._shape = new THREE.Mesh(geometry, material);
   this._shape.position.set(0,0,0);
+
+  this.level = 0;
+  this.parentNode = null;
 };
 
 // Constructor for Tree objects
@@ -26,6 +29,8 @@ function Tree(_id) {
     this.traverseDF(callback);
 
     if (parent) {
+      child.parentNode = parent;
+      child.level = parent.level+1;
     	parent.children.push(child);
     } else {
     	throw new Error('Cannot add node to a non-existent parent.');

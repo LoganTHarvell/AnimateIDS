@@ -56,14 +56,12 @@ function mainFunction() {
   // Loads the background texture image
   let texLoader = new THREE.TextureLoader();
   background_texture = texLoader.load("./Textures/wood.jpeg");
-
   scene.background = background_texture;
 
-  let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-  camera.position.z = 275;
-  // camera.position.y = 250;
-  // camera.up = new THREE.Vector3(0, 1, 0);
-  // camera.lookAt(new THREE.Vector3(250, 0, 0));
+  // let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+  let camera = new THREE.OrthographicCamera(-window.innerWidth/4, window.innerWidth/4, window.innerHeight/4, -window.innerHeight/4, 0.1, 1000);
+  camera.position.z = 10;
+
   scene.add(camera);
 
   // Lighting
@@ -73,38 +71,28 @@ function mainFunction() {
   scene.add(keyLight);
   scene.add(dirLight);
 
-  // Camera Controls
-  let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-  cameraControls.addEventListener("change",render,false);
-
-  // Ian's Tree Code that should probably be moved later
-
   // Creates tree, root_id must be 0
   // Randomly places children in tree
   var tree = new Tree(0);
-  for (var i=1; i < 10; i++) {
+  for (var i=1; i < 32; i++) {
     tree.add(i, Math.floor(Math.random() * i));
   }
 
-  console.log(tree)
+  console.log(tree);
 
-  if(tree._root != null) {
-    scene.add(tree._root._shape);
+  layoutTree(tree);
 
-    tree._root.children.forEach(function(_node) {
-      scene.add(_node._shape);
-    });
-  }
+  // Adds node shapes to scene
+  tree.traverseBF(function callback(node) {
+    scene.add(node._shape);
+  });
 
+  // Function for rotating every node shape
   let rotate_tree = function() {
-    if(tree._root != null) {
-      tree._root._shape.rotation.y += 0.05;
-    }
-
-    tree._root.children.forEach(function(_node) {
-      _node._shape.rotation.y += 0.05;
-    });
-  }
+    tree.traverseBF(function callback(node) {
+      node._shape.rotation.y += 0.05;
+    })
+  };
 
   // Main function call
   beginAnimation();
