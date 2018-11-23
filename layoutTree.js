@@ -56,20 +56,20 @@ function drawLineH(startPoint, endPoint) {
   var lines = [];
 
   // Start segment
-  lines.push(DrawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
+  lines.push(drawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
 
   // Intermidiate segment
   var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
   var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
-  lines.push(DrawLineSegment(imsStartX, midY, imsEndX, midY));
+  lines.push(drawLineSegment(imsStartX, midY, imsEndX, midY));
 
   // End segment
-  lines.push(DrawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
+  lines.push(drawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
 
   return lines;
 }
 
-function DrawLineSegment(startX, startY, endX, endY) {
+function drawLineSegment(startX, startY, endX, endY) {
 
   var material = new THREE.LineBasicMaterial({
     color: 0x00ffff
