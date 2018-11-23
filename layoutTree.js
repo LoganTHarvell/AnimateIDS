@@ -28,36 +28,48 @@ function layoutTree(tree) {
     positionNode(tree._root);
 
     // Draw Lines
-    // DrawLines(options.RootNode, options.Container);
+    var final_lines = [].concat(DrawLines(tree._root));
+
+    //console.log(final_lines);
+
+    return final_lines;
 }
 
-function DrawLines(node, container) {
-    if ((!node.Collapsed) && node.children && node.children.length > 0) { // Has children and Is Expanded
+function DrawLines(node) {
+    var lines = [];
+    if (node.children && node.children.length > 0) { // Has children and Is Expanded
         for (var j = 0; j < node.children.length; j++) {
-            if (node.ChildrenConnectorPoint.Layout == "Vertical")
-                DrawLineV(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
-            else
-                DrawLineH(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
+            // if (node.ChildrenConnectorPoint.Layout == "Vertical")
+            //     DrawLineV(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
+            // else
+            lines = lines.concat(DrawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
 
             // Children
-            DrawLines(node.children[j], container);
+            lines = lines.concat(DrawLines(node.children[j]));
         }
     }
+
+    //console.log(lines)
+    return lines;
 }
 
-function DrawLineH(container, startPoint, endPoint) {
+function DrawLineH(startPoint, endPoint) {
     var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
 
+    var lines = [];
+
     // Start segment
-    DrawLineSegment(container, startPoint.X, startPoint.Y, startPoint.X, midY, 1);
+    lines.push(DrawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
 
     // Intermidiate segment
     var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
     var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
-    DrawLineSegment(container, imsStartX, midY, imsEndX, midY, 1);
+    lines.push(DrawLineSegment(imsStartX, midY, imsEndX, midY));
 
     // End segment
-    DrawLineSegment(container, endPoint.X, midY, endPoint.X, endPoint.Y, 1);
+    lines.push(DrawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
+
+    return lines;
 }
 
 function DrawLineV(container, startPoint, endPoint) {
@@ -75,23 +87,22 @@ function DrawLineV(container, startPoint, endPoint) {
     DrawLineSegment(container, midX, endPoint.Y, endPoint.X, endPoint.Y, 1);
 }
 
-function DrawLineSegment(container, startX, startY, endX, endY, lineW) {
+function DrawLineSegment(startX, startY, endX, endY) {
 
-    var lineDiv = document.createElement("div");
-    lineDiv.style.top = startY + "px";
-    lineDiv.style.left = startX + "px";
+    var material = new THREE.LineBasicMaterial({
+      color: 0x00ffff
+    });
 
-    if (startX == endX) { // Vertical Line
-        lineDiv.style.width = lineW + "px";
-        lineDiv.style.height = (endY - startY) + "px";
-    }
-    else { // Horizontal Line
-        lineDiv.style.width = (endX - startX) + "px";
-        lineDiv.style.height = lineW + "px";
-    }
+    var geometry = new THREE.Geometry();
+    geometry.vertices.push(
+      new THREE.Vector3( startX, startY, 0 ),
+      new THREE.Vector3( endX, endY, 0 ),
+    );
 
-    lineDiv.className = "NodeLine";
-    container.appendChild(lineDiv);
+    var line = new THREE.Line( geometry, material );
+
+    //console.log(lines);
+    return line;
 }
 
 function positionNode(node) {
