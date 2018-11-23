@@ -71,12 +71,6 @@ function mainFunction() {
   scene.add(keyLight);
   scene.add(dirLight);
 
-  // Camera Controls
-  let cameraControls = new THREE.OrbitControls(camera, renderer.domElement);
-  cameraControls.addEventListener("change",render,false);
-
-  // Ian's Tree Code that should probably be moved later
-
   // Creates tree, root_id must be 0
   // Randomly places children in tree
   var tree = new Tree(0);
