@@ -18,71 +18,72 @@
 
 function layoutTree(tree) {
 
-    // Prepare Nodes
-    addLayoutPropertiesToNode(tree._root);
-    console.log(tree);
+  // Prepare Nodes
+  addLayoutPropertiesToNode(tree._root);
+  console.log(tree);
 
-    performLayout(tree._root);
+  performLayout(tree._root);
 
-    // Draw Boxes
-    positionNode(tree._root);
+  // Draw Boxes
+  positionNode(tree._root);
 
-    // Draw Lines
-    var final_lines = [].concat(DrawLines(tree._root));
+  // Draw Lines
+  var final_lines = [].concat(DrawLines(tree._root));
 
-    return final_lines;
+  return final_lines;
 }
 
 function DrawLines(node) {
-    var lines = [];
-    if (node.children && node.children.length > 0) { // Has children and Is Expanded
-        for (var j = 0; j < node.children.length; j++) {
 
-            lines = lines.concat(DrawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
+  var lines = [];
+  if (node.children && node.children.length > 0) { // Has children and Is Expanded
+    for (var j = 0; j < node.children.length; j++) {
 
-            // Children
-            lines = lines.concat(DrawLines(node.children[j]));
-        }
+      lines = lines.concat(DrawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
+
+      // Children
+      lines = lines.concat(DrawLines(node.children[j]));
     }
-
-    //console.log(lines)
-    return lines;
+  }
+  
+  return lines;
 }
 
 function DrawLineH(startPoint, endPoint) {
-    var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
 
-    var lines = [];
+  var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
 
-    // Start segment
-    lines.push(DrawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
+  var lines = [];
 
-    // Intermidiate segment
-    var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
-    var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
-    lines.push(DrawLineSegment(imsStartX, midY, imsEndX, midY));
+  // Start segment
+  lines.push(DrawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
 
-    // End segment
-    lines.push(DrawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
+  // Intermidiate segment
+  var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
+  var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
+  lines.push(DrawLineSegment(imsStartX, midY, imsEndX, midY));
 
-    return lines;
+  // End segment
+  lines.push(DrawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
+
+  return lines;
 }
 
 function DrawLineSegment(startX, startY, endX, endY) {
 
-    var material = new THREE.LineBasicMaterial({
-      color: 0x00ffff
-    });
+  var material = new THREE.LineBasicMaterial({
+    color: 0x00ffff
+  });
 
-    var geometry = new THREE.Geometry();
-    geometry.vertices.push(
-      new THREE.Vector3( startX, startY, 0 ),
-      new THREE.Vector3( endX, endY, 0 ),
-    );
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( startX, startY, 0 ),
+    new THREE.Vector3( endX, endY, 0 ),
+  );
 
-    var line = new THREE.Line( geometry, material );
+  var line = new THREE.Line( geometry, material );
 
-    return line;
+  return line;
 }
 
 function positionNode(node) {
@@ -146,12 +147,10 @@ function performLayout(node) {
 
   // Calculate Connector Points
   // Child: Where the lines get out from to connect this node with its children
-  var pointX = nodeX + (nodeW / 2);
-  var pointY = node.Y + nodeH;
+  var pointX = nodeX;
+  var pointY = node.Y;
   node.ChildrenConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
   // Parent: Where the line that connect this node with its parent end
-  pointX = nodeX + (nodeW / 2);
-  pointY = node.Y;
   node.ParentConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
 }
 
