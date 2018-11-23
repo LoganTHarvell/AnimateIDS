@@ -84,8 +84,6 @@ function mainFunction() {
 
   lines = lines.concat(layoutTree(tree));
 
-  //console.log(lines)
-
   // Adds node shapes to scene
   tree.traverseBF(function callback(node) {
     scene.add(node._shape);
