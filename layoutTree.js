@@ -30,8 +30,6 @@ function layoutTree(tree) {
     // Draw Lines
     var final_lines = [].concat(DrawLines(tree._root));
 
-    //console.log(final_lines);
-
     return final_lines;
 }
 
@@ -39,9 +37,7 @@ function DrawLines(node) {
     var lines = [];
     if (node.children && node.children.length > 0) { // Has children and Is Expanded
         for (var j = 0; j < node.children.length; j++) {
-            // if (node.ChildrenConnectorPoint.Layout == "Vertical")
-            //     DrawLineV(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
-            // else
+
             lines = lines.concat(DrawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
 
             // Children
@@ -72,21 +68,6 @@ function DrawLineH(startPoint, endPoint) {
     return lines;
 }
 
-function DrawLineV(container, startPoint, endPoint) {
-    var midX = (startPoint.X + ((endPoint.X - startPoint.X) / 2)); // Half path between start en end X point
-
-    // Start segment
-    DrawLineSegment(container, startPoint.X, startPoint.Y, midX, startPoint.Y, 1);
-
-    // Intermidiate segment
-    var imsStartY = startPoint.Y < endPoint.Y ? startPoint.Y : endPoint.Y; // The lower value will be the starting point
-    var imsEndY = startPoint.Y > endPoint.Y ? startPoint.Y : endPoint.Y; // The higher value will be the ending point
-    DrawLineSegment(container, midX, imsStartY, midX, imsEndY, 1);
-
-    // End segment
-    DrawLineSegment(container, midX, endPoint.Y, endPoint.X, endPoint.Y, 1);
-}
-
 function DrawLineSegment(startX, startY, endX, endY) {
 
     var material = new THREE.LineBasicMaterial({
@@ -101,7 +82,6 @@ function DrawLineSegment(startX, startY, endX, endY) {
 
     var line = new THREE.Line( geometry, material );
 
-    //console.log(lines);
     return line;
 }
 
