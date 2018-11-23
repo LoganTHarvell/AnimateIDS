@@ -36,10 +36,11 @@ function layoutTree(tree) {
 function drawLines(node) {
 
   var lines = [];
-  if (node.children && node.children.length > 0) { // Has children and Is Expanded
+  if (node.children && node.children.length > 0) { // Has children
     for (var j = 0; j < node.children.length; j++) {
 
-      lines = lines.concat(drawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
+      lines = lines.concat(drawLineH(node.ChildrenConnectorPoint,
+                            node.children[j].ParentConnectorPoint));
 
       // Children
       lines = lines.concat(drawLines(node.children[j]));
@@ -51,7 +52,8 @@ function drawLines(node) {
 
 function drawLineH(startPoint, endPoint) {
 
-  var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
+  // Half path between start en end Y point
+  var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2));
 
   var lines = [];
 
@@ -59,8 +61,10 @@ function drawLineH(startPoint, endPoint) {
   lines.push(drawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
 
   // Intermidiate segment
-  var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
-  var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
+  // The lower value will be the starting point
+  var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X;
+  // The lower value will be the starting point
+  var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X;
   lines.push(drawLineSegment(imsStartX, midY, imsEndX, midY));
 
   // End segment
@@ -117,7 +121,8 @@ function performLayout(node) {
   if (node.children && node.children.length > 0) { // If Has Children
 
     // My left is in the center of my children
-    var childrenW = (node.children[node.children.length - 1].X + node.children[node.children.length - 1].W) - node.children[0].X;
+    var childrenW = (node.children[node.children.length - 1].X + 
+                      node.children[node.children.length - 1].W) - node.children[0].X;
     nodeX = (node.children[0].X + (childrenW / 2)) - (nodeW / 2);
 
     // Is my left over my left node?
