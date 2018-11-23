@@ -1,97 +1,75 @@
-//Copyright (c) 2012, Cristhian Fernández Villalba
-//All rights reserved.
-
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following
-// conditions are met:
-// * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer
-//   in the documentation and/or other materials provided with the distribution.
-// * Neither the name of crisfervil nor the names of its contributors may be used to endorse or promote products
-//   derived from this software without specific prior written permission.
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
-// INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-// IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-// OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
-// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-// EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 function layoutTree(tree) {
 
-    // Prepare Nodes
-    addLayoutPropertiesToNode(tree._root);
-    console.log(tree);
+  // Prepare Nodes
+  addLayoutPropertiesToNode(tree._root);
+  console.log(tree);
 
-    performLayout(tree._root);
+  performLayout(tree._root);
 
-    // Draw Boxes
-    positionNode(tree._root);
+  // Draw Boxes
+  positionNode(tree._root);
 
-    // Draw Lines
-    // DrawLines(options.RootNode, options.Container);
+  // Draw Lines
+  var final_lines = [].concat(drawLines(tree._root));
+
+  return final_lines;
 }
 
-function DrawLines(node, container) {
-    if ((!node.Collapsed) && node.children && node.children.length > 0) { // Has children and Is Expanded
-        for (var j = 0; j < node.children.length; j++) {
-            if (node.ChildrenConnectorPoint.Layout == "Vertical")
-                DrawLineV(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
-            else
-                DrawLineH(container, node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint);
+function drawLines(node) {
 
-            // Children
-            DrawLines(node.children[j], container);
-        }
+  var lines = [];
+  if (node.children && node.children.length > 0) { // Has children
+    for (var j = 0; j < node.children.length; j++) {
+
+      lines = lines.concat(drawLineH(node.ChildrenConnectorPoint,
+                            node.children[j].ParentConnectorPoint));
+
+      // Children
+      lines = lines.concat(drawLines(node.children[j]));
     }
+  }
+  
+  return lines;
 }
 
-function DrawLineH(container, startPoint, endPoint) {
-    var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
+function drawLineH(startPoint, endPoint) {
 
-    // Start segment
-    DrawLineSegment(container, startPoint.X, startPoint.Y, startPoint.X, midY, 1);
+  // Half path between start en end Y point
+  var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2));
 
-    // Intermidiate segment
-    var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X; // The lower value will be the starting point
-    var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X; // The higher value will be the ending point
-    DrawLineSegment(container, imsStartX, midY, imsEndX, midY, 1);
+  var lines = [];
 
-    // End segment
-    DrawLineSegment(container, endPoint.X, midY, endPoint.X, endPoint.Y, 1);
+  // Start segment
+  lines.push(drawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
+
+  // Intermidiate segment
+  // The lower value will be the starting point
+  var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X;
+  // The lower value will be the starting point
+  var imsEndX = startPoint.X > endPoint.X ? startPoint.X : endPoint.X;
+  lines.push(drawLineSegment(imsStartX, midY, imsEndX, midY));
+
+  // End segment
+  lines.push(drawLineSegment(endPoint.X, midY, endPoint.X, endPoint.Y));
+
+  return lines;
 }
 
-function DrawLineV(container, startPoint, endPoint) {
-    var midX = (startPoint.X + ((endPoint.X - startPoint.X) / 2)); // Half path between start en end X point
+function drawLineSegment(startX, startY, endX, endY) {
 
-    // Start segment
-    DrawLineSegment(container, startPoint.X, startPoint.Y, midX, startPoint.Y, 1);
+  var material = new THREE.LineBasicMaterial({
+    color: 0x00ffff
+  });
 
-    // Intermidiate segment
-    var imsStartY = startPoint.Y < endPoint.Y ? startPoint.Y : endPoint.Y; // The lower value will be the starting point
-    var imsEndY = startPoint.Y > endPoint.Y ? startPoint.Y : endPoint.Y; // The higher value will be the ending point
-    DrawLineSegment(container, midX, imsStartY, midX, imsEndY, 1);
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(
+    new THREE.Vector3( startX, startY, 0 ),
+    new THREE.Vector3( endX, endY, 0 ),
+  );
 
-    // End segment
-    DrawLineSegment(container, midX, endPoint.Y, endPoint.X, endPoint.Y, 1);
-}
+  var line = new THREE.Line( geometry, material );
 
-function DrawLineSegment(container, startX, startY, endX, endY, lineW) {
-
-    var lineDiv = document.createElement("div");
-    lineDiv.style.top = startY + "px";
-    lineDiv.style.left = startX + "px";
-
-    if (startX == endX) { // Vertical Line
-        lineDiv.style.width = lineW + "px";
-        lineDiv.style.height = (endY - startY) + "px";
-    }
-    else { // Horizontal Line
-        lineDiv.style.width = (endX - startX) + "px";
-        lineDiv.style.height = lineW + "px";
-    }
-
-    lineDiv.className = "NodeLine";
-    container.appendChild(lineDiv);
+  return line;
 }
 
 function positionNode(node) {
@@ -125,7 +103,8 @@ function performLayout(node) {
   if (node.children && node.children.length > 0) { // If Has Children
 
     // My left is in the center of my children
-    var childrenW = (node.children[node.children.length - 1].X + node.children[node.children.length - 1].W) - node.children[0].X;
+    var childrenW = (node.children[node.children.length - 1].X + 
+                      node.children[node.children.length - 1].W) - node.children[0].X;
     nodeX = (node.children[0].X + (childrenW / 2)) - (nodeW / 2);
 
     // Is my left over my left node?
@@ -155,12 +134,10 @@ function performLayout(node) {
 
   // Calculate Connector Points
   // Child: Where the lines get out from to connect this node with its children
-  var pointX = nodeX + (nodeW / 2);
-  var pointY = node.Y + nodeH;
+  var pointX = nodeX;
+  var pointY = node.Y;
   node.ChildrenConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
   // Parent: Where the line that connect this node with its parent end
-  pointX = nodeX + (nodeW / 2);
-  pointY = node.Y;
   node.ParentConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
 }
 

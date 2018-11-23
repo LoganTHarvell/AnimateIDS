@@ -80,12 +80,19 @@ function mainFunction() {
 
   console.log(tree);
 
-  layoutTree(tree);
+  var lines = [];
+
+  lines = lines.concat(layoutTree(tree));
 
   // Adds node shapes to scene
   tree.traverseBF(function callback(node) {
     scene.add(node._shape);
   });
+
+  var lines_len = lines.length;
+  for (var i = 0; i < lines_len; i++) {
+    scene.add(lines[i]);
+  }
 
   // Function for rotating every node shape
   let rotate_tree = function() {
