@@ -8,6 +8,12 @@ function mainFunction() {
   renderer.setClearColor(0x6666BB, 1);
   document.body.appendChild(renderer.domElement);
 
+  var shapes = [];
+  var shape_count = 0;
+  var frame_count = 0;
+  let current_node_mat = new THREE.MeshBasicMaterial({'color':0xff0000});
+  let regular_mat = new THREE.MeshNormalMaterial();
+
   let render = function() {
     renderer.render(scene, camera);
   };
@@ -30,7 +36,18 @@ function mainFunction() {
 
     if (elapsed > fpsInterval) {
 
+      frame_count += 1;
+
       then = now - (elapsed % fpsInterval);
+
+      if(frame_count == 30 && shape_count != shapes.length) {
+        if(shape_count - 1 >= 0) {
+          shapes[shape_count-1].material = regular_mat;
+        }
+        shapes[shape_count].material = current_node_mat;
+        shape_count++;
+        frame_count = 0;
+      }
 
       rotate_tree();
 
@@ -93,6 +110,10 @@ function mainFunction() {
   for (var i = 0; i < lines_len; i++) {
     scene.add(lines[i]);
   }
+
+  var random_id = Math.floor(Math.random()*32);
+  shapes = tree.search(random_id, tree.traverseID);
+  console.log(shapes);
 
   // Function for rotating every node shape
   let rotate_tree = function() {
