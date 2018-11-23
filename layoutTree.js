@@ -28,28 +28,28 @@ function layoutTree(tree) {
   positionNode(tree._root);
 
   // Draw Lines
-  var final_lines = [].concat(DrawLines(tree._root));
+  var final_lines = [].concat(drawLines(tree._root));
 
   return final_lines;
 }
 
-function DrawLines(node) {
+function drawLines(node) {
 
   var lines = [];
   if (node.children && node.children.length > 0) { // Has children and Is Expanded
     for (var j = 0; j < node.children.length; j++) {
 
-      lines = lines.concat(DrawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
+      lines = lines.concat(drawLineH(node.ChildrenConnectorPoint, node.children[j].ParentConnectorPoint));
 
       // Children
-      lines = lines.concat(DrawLines(node.children[j]));
+      lines = lines.concat(drawLines(node.children[j]));
     }
   }
   
   return lines;
 }
 
-function DrawLineH(startPoint, endPoint) {
+function drawLineH(startPoint, endPoint) {
 
   var midY = (startPoint.Y + ((endPoint.Y - startPoint.Y) / 2)); // Half path between start en end Y point
 
