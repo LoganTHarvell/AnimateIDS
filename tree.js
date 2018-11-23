@@ -67,19 +67,22 @@ function Tree(_id) {
   this.traverseID = function(callback) {
     let _root = this._root;
     var isDone = false;
+    var moreChildren = false;
     var maxLevel = 0;
-    var x = 0;
 
     let recurse = function(node, level, maxLevel) {
       for (var i = 0; !isDone && i < node.children.length; i++) {
-        if (level >= maxLevel) break;
+        if (level >= maxLevel) {
+          moreChildren = true;
+          break;
+         }
         recurse(node.children[i], level+1, maxLevel);
       }
 
     	if (!isDone) isDone = callback(node);
     };
 
-    while (!isDone) {
+    while (!isDone && moreChildren) {
       recurse(_root, 0, maxLevel++);
     }
   };
