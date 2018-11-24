@@ -136,7 +136,7 @@ function mainFunction() {
   // Function for GUI button
   var run = {'Run IDS':function(){
     if(!controller['running'] && controller['init']) {
-      shapes = tree.search(Math.floor(controller['id']), tree.traverseID);
+      shapes = tree.get_shapes(Math.floor(controller['id']), tree.traverseID);
       shape_count = 0;
       controller['running'] = true;
     }
