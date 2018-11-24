@@ -28,7 +28,7 @@ function drawLines(node) {
       lines = lines.concat(drawLines(node.children[j]));
     }
   }
-  
+
   return lines;
 }
 
@@ -42,7 +42,7 @@ function drawLineH(startPoint, endPoint) {
   // Start segment
   lines.push(drawLineSegment(startPoint.X, startPoint.Y, startPoint.X, midY));
 
-  // Intermidiate segment
+  // Intermediate segment
   // The lower value will be the starting point
   var imsStartX = startPoint.X < endPoint.X ? startPoint.X : endPoint.X;
   // The lower value will be the starting point
@@ -93,24 +93,22 @@ function performLayout(node) {
 
   var nodeX = -200; // defaultValue
 
-  // Before Layout this Node, Layout its children
+  // Recursively lays out children then the current node
   if (node.children && node.children.length > 0) {
     for (var i = 0; i < node.children.length; i++) {
       performLayout(node.children[i]);
     }
   }
 
-  if (node.children && node.children.length > 0) { // If Has Children
+  if (node.children && node.children.length > 0) {
 
-    // My left is in the center of my children
-    var childrenW = (node.children[node.children.length - 1].X + 
+    var childrenW = (node.children[node.children.length - 1].X +
                       node.children[node.children.length - 1].W) - node.children[0].X;
     nodeX = (node.children[0].X + (childrenW / 2)) - (nodeW / 2);
 
-    // Is my left over my left node?
-    // Move it to the right
-    if (node.LeftNode && ((node.LeftNode.X + node.LeftNode.W + nodeMarginX) > nodeX)) {
-      var newX = node.LeftNode.X + node.LeftNode.W + nodeMarginX;
+    // Move overlapping nodes to the right
+    if (node.leftNode && ((node.leftNode.X + node.leftNode.W + nodeMarginX) > nodeX)) {
+      var newX = node.leftNode.X + node.leftNode.W + nodeMarginX;
       var diff = newX - nodeX;
       /// Move also my children
       MoveRight(node.children, diff);
@@ -118,26 +116,25 @@ function performLayout(node) {
     }
   }
   else {
-    // My left is next to my left sibling
-    if (node.LeftNode)
-      nodeX = node.LeftNode.X + node.LeftNode.W + nodeMarginX;
+    // positions current node to the right of its left node
+    if (node.leftNode)
+      nodeX = node.leftNode.X + node.leftNode.W + nodeMarginX;
   }
 
   node.X = nodeX;
 
-  // The top depends only on the level
+  // Sets height based on level
   node.Y = -((nodeMarginY * (node.level + 1)) + (nodeH * (node.level + 1)));
   node.Y += 200;
-  // Size is constant
+
+  // Sets node dimensions
   node.H = nodeH;
   node.W = nodeW;
 
   // Calculate Connector Points
-  // Child: Where the lines get out from to connect this node with its children
   var pointX = nodeX;
   var pointY = node.Y;
   node.ChildrenConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
-  // Parent: Where the line that connect this node with its parent end
   node.ParentConnectorPoint = { X: pointX, Y: pointY, Layout: "Horizontal" };
 }
 
@@ -157,9 +154,10 @@ function addLayoutPropertiesToNode(node, leftNode, rightLimits) {
   if (leftNode == undefined) leftNode = null;
   if (rightLimits == undefined) rightLimits = new Array();
 
-  node.LeftNode = leftNode;
+  node.leftNode = leftNode;
 
-  if (node.children && node.children.length > 0) { // Has children
+  if (node.children && node.children.length > 0) {
+
     for (var i = 0; i < node.children.length; i++) {
       var left = null;
       if (i == 0 && rightLimits[node.level] != undefined)
@@ -171,5 +169,6 @@ function addLayoutPropertiesToNode(node, leftNode, rightLimits) {
 
       addLayoutPropertiesToNode(node.children[i], left, rightLimits);
     }
+    
   }
 }

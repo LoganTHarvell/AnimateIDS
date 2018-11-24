@@ -1,14 +1,11 @@
 function mainFunction() {
-  // Rendering
-  let renderer = new THREE.WebGLRenderer({ antialias: true });
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-
-  renderer.setClearColor(0x6666BB, 1);
-  document.body.appendChild(renderer.domElement);
 
   // Globals
+  let fpsInterval = 1000/30;
+  var then;
+
+  let numNodes = 32;
+
   var shapes_dict = {};
   var shapes = [];
   var shape_count = null;
@@ -17,21 +14,37 @@ function mainFunction() {
   let selected_node_mat = new THREE.MeshBasicMaterial({'color':0x0000ff});
   let regular_mat = new THREE.MeshNormalMaterial();
 
-  var gui = new dat.GUI();
+  // Rendering
+  let renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x6666BB, 1);
+  document.body.appendChild(renderer.domElement);
 
+  // Scene Initial Setup
+  let scene = new THREE.Scene();
+  let aspect = window.innerWidth / window.innerHeight;
+
+  // Loads the background texture image
+  let texLoader = new THREE.TextureLoader();
+  background_texture = texLoader.load("./Textures/wood.jpeg");
+  scene.background = background_texture;
+
+  // Camera Setup
+  let camera = new THREE.OrthographicCamera(-window.innerWidth/4, window.innerWidth/4, window.innerHeight/4, -window.innerHeight/4, 0.1, 1000);
+  camera.position.z = 10;
+  scene.add(camera);
+
+  // Render Function:
   let render = function() {
     renderer.render(scene, camera);
   };
 
-  let fpsInterval = 1000/30;
-  var then;
-
+  // Animation Functions:
   let beginAnimation = function() {
     then = Date.now();
     animate();
   }
-
-  var factor = 0.01;
 
   let animate = function() {
     requestAnimationFrame(animate);
@@ -67,7 +80,7 @@ function mainFunction() {
     }
   }
 
-  // Resizing Window
+  // Enables window resizing
   let resize = function() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -77,61 +90,16 @@ function mainFunction() {
 
   window.addEventListener("resize",resize, false);
 
-  // Scene Building
-  // Camera
-  let scene = new THREE.Scene();
-  let aspect = window.innerWidth / window.innerHeight;
 
-  // Loads the background texture image
-  let texLoader = new THREE.TextureLoader();
-  background_texture = texLoader.load("./Textures/wood.jpeg");
-  scene.background = background_texture;
-
-  // let camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-  let camera = new THREE.OrthographicCamera(-window.innerWidth/4, window.innerWidth/4, window.innerHeight/4, -window.innerHeight/4, 0.1, 1000);
-  camera.position.z = 10;
-
-  scene.add(camera);
-
-  // Lighting
-  let keyLight = new THREE.AmbientLight(0xffffff, 0.75);
-  let dirLight = new THREE.DirectionalLight(0xc88b15, 2);
-  dirLight.position.set(10, 100, 100);
-  scene.add(keyLight);
-  scene.add(dirLight);
-
-  // Creates tree, root_id must be 0
-  // Randomly places children in tree
-  var tree = new Tree(0);
-  for (var i=1; i < 32; i++) {
-    tree.add(i, Math.floor(Math.random() * i));
-  }
-
-  console.log(tree);
-
-  // Adds node shapes to scene
-  tree.traverseBF(function callback(node) {
-    scene.add(node._shape);
-    var shape = node._shape;
-    shapes_dict[node._id] = shape;
-  });
-
-  // Get list of all the lines
-  var lines = [];
-  lines = lines.concat(layoutTree(tree));
-
-  // Adds lines to the scene
-  var lines_len = lines.length;
-  for (var i = 0; i < lines_len; i++) {
-    scene.add(lines[i]);
-  }
+  // GUI Setup:
+  var gui = new dat.GUI();
 
   // Controller for GUI stuff
-  var controller = {'id':0, 
-                    'running':false, 
-                    'init':false, 
+  var controller = {'id':0,
+                    'running':false,
+                    'init':false,
                     'prev_selected_node':null
-                  };
+                   };
 
   // Function for GUI button
   var run = {'Run IDS':function(){
@@ -166,6 +134,34 @@ function mainFunction() {
 
   // GUI button
   gui.add(run, 'Run IDS');
+
+
+  // Tree Setup:
+  // Creates tree, root_id must be 0
+  // Randomly places specified number of nodes as children in tree
+  var tree = new Tree(0);
+  for (var i=1; i < numNodes; i++) {
+    tree.add(i, Math.floor(Math.random() * i));
+  }
+
+  console.log(tree);
+
+  // Adds node shapes to scene
+  tree.traverseBF(function callback(node) {
+    scene.add(node._shape);
+    var shape = node._shape;
+    shapes_dict[node._id] = shape;
+  });
+
+  // Get list of all the lines
+  var lines = [];
+  lines = lines.concat(layoutTree(tree));
+
+  // Adds lines to the scene
+  var lines_len = lines.length;
+  for (var i = 0; i < lines_len; i++) {
+    scene.add(lines[i]);
+  }
 
   // Function for rotating every node shape
   let rotate_tree = function() {

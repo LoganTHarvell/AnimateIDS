@@ -95,10 +95,10 @@ function Tree(_id) {
   // Search function that finds a node with a specified ID
   // Search must be given a traversal method
   this.search = function(_id, traversal) {
-    var parent = null,
+    var searchNode = null,
         callback = function(node) {
           if (node._id === _id) {
-            parent = node;
+            searchNode = node;
             return true;
           }
           else {
@@ -108,23 +108,25 @@ function Tree(_id) {
 
     traversal.call(this, callback);
 
-    if (parent) {
+    if (searchNode) {
       console.log("Node with ID "+_id+" was found in the tree");
+      return searchNode;
     } else {
       console.log("Node with ID "+_id+" not found");
+      return null;
     }
   };
 
   // Search function that finds a node with a specified ID
-  // and returns a list of the path to find it
+  // and returns a list of the shapes for the nodes in the path
   this.get_shapes = function(_id, traversal) {
     var shapes = [];
-    var parent = null,
+    var searchNode = null,
         callback = function(node) {
           var shape = node._shape;
           shapes.push(shape);
           if (node._id === _id) {
-            parent = node;
+            searchNode = node;
             return true;
           }
           else {
