@@ -1,10 +1,9 @@
-let material = new THREE.MeshNormalMaterial();
-let geometry = new THREE.IcosahedronGeometry(10);
-
 // Constructor for Node objects
 function Node(_id) {
   this._id = _id;
   this.children = [];
+  var material = new THREE.MeshNormalMaterial();
+  var geometry = new THREE.IcosahedronGeometry(10);
   this._shape = new THREE.Mesh(geometry, material);
   this._shape.position.set(0,0,0);
 
@@ -72,7 +71,7 @@ function Tree(_id) {
   this.traverseID = function(callback) {
     let _root = this._root;
     var isDone = false;
-    var moreChildren = false;
+    var moreChildren = true;
     var maxLevel = 0;
 
     let recurse = function(node, level, maxLevel) {
@@ -113,6 +112,28 @@ function Tree(_id) {
     } else {
       throw new Error("Node with ID "+_id+" not found");
     }
+  };
+
+  // Search function that finds a node with a specified ID
+  // and returns a list of the path to find it
+  this.get_shapes = function(_id, traversal) {
+    var shapes = [];
+    var parent = null,
+        callback = function(node) {
+          var shape = node._shape;
+          shapes.push(shape);
+          if (node._id === _id) {
+            parent = node;
+            return true;
+          }
+          else {
+            return false;
+          }
+        };
+
+    traversal.call(this, callback);
+
+    return shapes;
   };
 
 };
