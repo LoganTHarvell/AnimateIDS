@@ -127,7 +127,7 @@ function mainFunction() {
 
   var controller = {'id':0, 'running':false, 'init':false, 'prev_selected_node':null};
   var run = {'Run IDS':function(){
-    if(!controller['running']) {
+    if(!controller['running'] && controller['init']) {
       shapes = tree.search(Math.floor(controller['id']), tree.traverseID);
       shape_count = 0;
       controller['running'] = true;
@@ -144,6 +144,9 @@ function mainFunction() {
       }
       shapes_dict[Math.floor(controller['id'])].material = selected_node_mat;
       controller['prev_selected_node'] = Math.floor(controller['id']);
+    }
+    else {
+      controller['id'] = Math.floor(controller['prev_selected_node']);
     }
   });
 
