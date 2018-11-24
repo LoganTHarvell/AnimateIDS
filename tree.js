@@ -69,9 +69,8 @@ function Tree(_id) {
 
   // Iterative Deepening traversal method
   this.traverseID = function(callback) {
-    let _root = this._root;
     var isDone = false;
-    var moreChildren = true;
+    var moreChildren = false;
     var maxLevel = 0;
 
     let recurse = function(node, level, maxLevel) {
@@ -79,16 +78,18 @@ function Tree(_id) {
         if (level >= maxLevel) {
           moreChildren = true;
           break;
-         }
+        }
         recurse(node.children[i], level+1, maxLevel);
       }
 
     	if (!isDone) isDone = callback(node);
-    };
-
-    while (!isDone && moreChildren) {
-      recurse(_root, 0, maxLevel++);
     }
+
+    do {
+      moreChildren = false;
+      recurse(this._root, 0, maxLevel++);
+    } while (!isDone && moreChildren);
+
   };
 
   // Search function that finds a node with a specified ID
@@ -110,7 +111,7 @@ function Tree(_id) {
     if (parent) {
       console.log("Node with ID "+_id+" was found in the tree");
     } else {
-      throw new Error("Node with ID "+_id+" not found");
+      console.log("Node with ID "+_id+" not found");
     }
   };
 
