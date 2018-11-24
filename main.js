@@ -8,11 +8,15 @@ function mainFunction() {
   renderer.setClearColor(0x6666BB, 1);
   document.body.appendChild(renderer.domElement);
 
+  var shapes_dict = {};
   var shapes = [];
-  var shape_count = 0;
+  var shape_count = null;
   var frame_count = 0;
   let current_node_mat = new THREE.MeshBasicMaterial({'color':0xff0000});
+  let selected_node_mat = new THREE.MeshBasicMaterial({'color':0x0000ff});
   let regular_mat = new THREE.MeshNormalMaterial();
+
+  var gui = new dat.GUI();
 
   let render = function() {
     renderer.render(scene, camera);
@@ -40,7 +44,9 @@ function mainFunction() {
 
       then = now - (elapsed % fpsInterval);
 
-      if(frame_count == 30 && shape_count != shapes.length) {
+      //console.log(controller['running'] + ' ' + frame_count + ' ' + shape_count + ' ' + shapes.length)
+
+      if(controller['running'] && frame_count >= 30 && shape_count != shapes.length) {
         if(shape_count - 1 >= 0) {
           shapes[shape_count-1].material = regular_mat;
         }
@@ -48,6 +54,12 @@ function mainFunction() {
         shape_count++;
         frame_count = 0;
       }
+      else if(controller['running'] && shape_count == shapes.length) {
+        controller['running'] = false;
+        shapes[shape_count-1].material = selected_node_mat;
+        shape_count = 0;
+      }
+
 
       rotate_tree();
 
@@ -104,6 +116,8 @@ function mainFunction() {
   // Adds node shapes to scene
   tree.traverseBF(function callback(node) {
     scene.add(node._shape);
+    var shape = node._shape;
+    shapes_dict[node._id] = shape;
   });
 
   var lines_len = lines.length;
@@ -111,9 +125,31 @@ function mainFunction() {
     scene.add(lines[i]);
   }
 
-  var random_id = Math.floor(Math.random()*32);
-  shapes = tree.search(random_id, tree.traverseID);
-  console.log(shapes);
+  var controller = {'id':0, 'running':false, 'init':false, 'prev_selected_node':null};
+  var run = {'Run IDS':function(){
+    if(!controller['running']) {
+      shapes = tree.search(Math.floor(controller['id']), tree.traverseID);
+      shape_count = 0;
+      controller['running'] = true;
+    }
+  }};
+
+  gui.add(controller, 'id', 0, 31).onChange(function() {
+    if(!controller['running']) {
+      if(!controller['init']) {
+        controller['init'] = true;
+      }
+      if(controller['prev_selected_node'] != null) {
+        shapes_dict[Math.floor(controller['prev_selected_node'])].material = regular_mat;
+      }
+      shapes_dict[Math.floor(controller['id'])].material = selected_node_mat;
+      controller['prev_selected_node'] = Math.floor(controller['id']);
+    }
+  });
+
+  gui.add(run, 'Run IDS');
+
+  console.log(shapes_dict)
 
   // Function for rotating every node shape
   let rotate_tree = function() {

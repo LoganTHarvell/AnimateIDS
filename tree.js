@@ -101,7 +101,6 @@ function Tree(_id) {
           shapes.push(shape);
           if (node._id === _id) {
             parent = node;
-            node._shape.material = new THREE.MeshBasicMaterial({'color':0xffa500});
             return true;
           }
           else {
