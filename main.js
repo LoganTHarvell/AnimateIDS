@@ -10,15 +10,16 @@ function mainFunction() {
   var shapes = [];
   var shape_count = null;
   var frame_count = 0;
+
   let current_node_mat = new THREE.MeshBasicMaterial({'color':0xff0000});
   let selected_node_mat = new THREE.MeshBasicMaterial({'color':0x0000ff});
   let regular_mat = new THREE.MeshNormalMaterial();
 
   // Rendering
-  let renderer = new THREE.WebGLRenderer({ antialias: true });
+  let renderer = new THREE.WebGLRenderer({ antialias: true,
+                                           alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setClearColor(0x6666BB, 1);
   document.body.appendChild(renderer.domElement);
 
   // Scene Initial Setup
@@ -26,9 +27,9 @@ function mainFunction() {
   let aspect = window.innerWidth / window.innerHeight;
 
   // Loads the background texture image
-  let texLoader = new THREE.TextureLoader();
-  background_texture = texLoader.load("./Textures/wood.jpeg");
-  scene.background = background_texture;
+  // let texLoader = new THREE.TextureLoader();
+  // background_texture = texLoader.load("./Textures/wood.jpeg");
+  // scene.background = background_texture;
 
   // Camera Setup
   let camera = new THREE.OrthographicCamera(-window.innerWidth/4, window.innerWidth/4, window.innerHeight/4, -window.innerHeight/4, 0.1, 1000);
